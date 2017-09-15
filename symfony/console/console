@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+
+<?php
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Hash\HashCommand;
+use Hash\ConfirmCommand;
+
+$app = new Application();
+$app->add(new HashCommand());
+$app->add(new ConfirmCommand());
+$app->run();
