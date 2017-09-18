@@ -7,8 +7,14 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Symfony\Component\Console\Application;
 use Hash\HashCommand;
 use Hash\ConfirmCommand;
+use FizzBuzz\FizzBuzzCommand;
+use Metric\MetricsCommand;
+use Progress\ProgressCommand;
 
 $app = new Application();
 $app->add(new HashCommand());
 $app->add(new ConfirmCommand());
+$app->add(new FizzBuzzCommand());
+$app->add(new MetricsCommand());
+$app->add(new ProgressCommand());
 $app->run();
