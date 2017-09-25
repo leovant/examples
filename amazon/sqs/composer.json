@@ -1,0 +1,7 @@
+{
+    "require": {
+        "aws/aws-sdk-php": "^3.36",
+        "symfony/console": "^3.3",
+        "swiftmailer/swiftmailer": "^6.0"
+    }
+}
