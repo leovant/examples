@@ -1,0 +1,18 @@
+version: "2"
+
+services:
+  node_1:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+    ports:
+      - "5000:5000"
+
+  node_2:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+    ports:
+      - "5001:5000"
