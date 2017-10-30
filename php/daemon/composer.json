@@ -1,0 +1,19 @@
+{
+  "name": "leovant/php-daemon",
+  "type": "project",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Leo Tavares",
+      "email": "leovant@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Leo\\": "src"
+    }
+  },
+  "require": {
+    "symfony/console": "^3.3"
+  }
+}
