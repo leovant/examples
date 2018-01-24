@@ -12,11 +12,10 @@ if (environment.production) {
 KeycloakService.init()
   .then(authenticated => {
     console.debug('Keycloak initialized. Auth: ', authenticated);
+    platformBrowserDynamic()
+      .bootstrapModule(AppModule)
+      .catch(err => console.log(err));
   })
   .catch(error =>
     console.debug('Keycloak could not be initialized. Error: ', error)
   );
-
-platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch(err => console.log(err));

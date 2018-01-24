@@ -40,7 +40,10 @@ export class KeycloakService {
     return KeycloakService.adapter.login();
   }
 
-  logout() {
+  logout(redirectUri?: string) {
+    if (redirectUri) {
+      return KeycloakService.adapter.logout({ redirectUri: redirectUri });
+    }
     return KeycloakService.adapter.logout();
   }
 

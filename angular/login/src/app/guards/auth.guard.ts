@@ -19,8 +19,9 @@ export class AuthGuard implements CanActivate {
     if (KeycloakService.auth.loggedIn) {
       return true;
     }
-    //this.router.navigate(['/login']);
-    this.kc.login('http://localhost:4200/home');
+    this.kc.login(
+      window.location.protocol + '//' + window.location.host + state.url
+    );
     return false;
   }
 }
