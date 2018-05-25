@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Welcome to Scores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+</head>
+
+<body>
+    <div id="data"></div>
+
+    <script id="gameTemplate" type="text/x-jsrender">
+        <div class="game">
+            <div>
+                {{:game.awayTeam.City}} {{:game.awayTeam.Name}} at {{:game.homeTeam.City}} {{:game.homeTeam.Name}}
+            </div>
+
+            <div>
+                {{if isUnplayed == "true" }}
+                    
+                Game starts at {{:game.time}}
+                    
+                {{else isCompleted == "false"}}
+                    
+                <div>Current Score: {{:awayScore}} - {{:homeScore}}</div>
+                    
+                <div>
+                    {{if currentIntermission}}
+                        {{:~ordinal_suffix_of(currentIntermission)}} Intermission
+                    {{else currentPeriod}}
+                        {{:~ordinal_suffix_of(currentPeriod)}}<br/>
+                        {{:~time_left(currentPeriodSecondsRemaining)}}
+                    {{else}}
+                        1st
+                    {{/if}}
+                </div>
+                    
+                {{else}}
+                    
+                Final Score: {{:awayScore}} - {{:homeScore}}
+                    
+                {{/if}}
+            </div>
+        </div>
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.90/jsrender.min.js"></script>
+    <script>
+        var socket = io();
+        var helpers = {
+            ordinal_suffix_of: function (i) {
+                var j = i % 10,
+                    k = i % 100;
+                if (j == 1 && k != 11) {
+                    return i + "st";
+                }
+                if (j == 2 && k != 12) {
+                    return i + "nd";
+                }
+                if (j == 3 && k != 13) {
+                    return i + "rd";
+                }
+                return i + "th";
+            },
+            time_left: function (time) {
+                var minutes = Math.floor(time / 60);
+                var seconds = time - minutes * 60;
+
+                return minutes + ':' + ('0' + seconds).slice(-2);
+            }
+        };
+
+        var tmpl = $.templates("#gameTemplate");
+
+        socket.on("data", (data) => {
+            console.log(data);
+
+            if (data.scoreboard.gameScore) {
+                $('#data').html(tmpl.render(data.scoreboard.gameScore, helpers));
+            } else {
+                $('#data').html("No matches.");
+            }
+        });
+    </script>
+
+    <style>
+        .game {
+            border: 1px solid #000;
+            float: left;
+            margin: 1%;
+            padding: 1em;
+            width: 25%;
+        }
+    </style>
+</body>
+
+</html>
