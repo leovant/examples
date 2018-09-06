@@ -1,13 +1,29 @@
 {
-  "name": "Chrome extension",
-  "version": "1.0",
-  "description": "Build an extension",
+  "name": "br.net.cartoriodigital",
+  "version": "1.0.0",
+  "description": "Cartório Digital",
   "manifest_version": 2,
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
-  "permissions": ["activeTab", "declarativeContent", "downloads", "storage"],
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": ["content.js"],
+      "matches": ["https://*.cartoriodigital.net.br/*"]
+    }
+  ],
+  "externally_connectable": {
+    "matches": ["https://*.cartoriodigital.net.br/*"]
+  },
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "downloads",
+    "nativeMessaging",
+    "storage"
+  ],
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
