@@ -1,9 +1,9 @@
 const version = '1.0';
 
-const native_application = 'br.net.cartoriodigital.signer';
+const native_application = 'br.net.cartoriodigital.assinador';
 const page_host = 'acesso.cartoriodigital.net.br';
 const extension_id = 'mfgahechimnhoclmnokgoinlicmhfofa';
-const extension_port_name = 'br.net.cartoriodigital.signer.PORT';
+const extension_port_name = 'br.net.cartoriodigital.assinador.PORT';
 
 const status = {
   INSTALLED: 0,
@@ -24,6 +24,15 @@ function init() {
   if (browser.runtime.onUpdateAvailable != null) {
     browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
   }
+  console.log('[Background] loaded');
+}
+/**
+ * Handler called when an update is available.
+ * @param {Object} details Details of the update.
+ */
+function onUpdateAvailable(details) {
+  console.info(`New version available: ${details.version}`);
+  // Update extension
 }
 /**
  * Connect to the native application.
@@ -152,14 +161,26 @@ function onPageMessage(page, message) {
   let page_callback = function(response) {
     console.log('[Background] calling callback function', response);
 
-    page.page_port.postMessage(message);
+    page.page_port.postMessage(response);
   };
   if (typeof message === 'string') {
     message = JSON.parse(message);
   }
-  message._rid = uuid;
+  message._rid = uuid();
   page.callbacks[message._rid] = page_callback;
   console.log('[Background] sending message to native', message);
+
+  if (page.native_port === null) {
+    try {
+      connectToNative(page);
+    } catch (err) {
+      console.error(
+        '[Background] got an error while connecting to native application',
+        err
+      );
+    }
+  }
+  // TODO: read message command
   page.native_port.postMessage(message);
 }
 /**
@@ -174,14 +195,6 @@ function onPageDisconnected(page) {
     // Native shutdown?
   }
   pages.splice(pages.indexOf(page), 1);
-}
-/**
- * Handler called when an update is available.
- * @param {Object} details Details of the update.
- */
-function onUpdateAvailable(details) {
-  console.info(`New version available: ${details.version}`);
-  // Update extension
 }
 /**
  * RFC 4122 compliant UUID generator.

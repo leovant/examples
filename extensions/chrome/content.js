@@ -1,7 +1,7 @@
 const extension_id = 'mfgahechimnhoclmnokgoinlicmhfofa';
-const extension_port_name = 'br.net.cartoriodigital.signer.PORT';
-const request_event = 'br.net.cartoriodigital.signer.request';
-const response_event = 'br.net.cartoriodigital.signer.response';
+const extension_port_name = 'br.net.cartoriodigital.assinador.PORT';
+const request_event = 'br.net.cartoriodigital.assinador.request';
+const response_event = 'br.net.cartoriodigital.assinador.response';
 
 let extension_port = null;
 let browser = chrome;
@@ -12,6 +12,7 @@ function init() {
   document.addEventListener(request_event, function(event) {
     onPageMessage(event.detail);
   });
+  console.log('[Content] loaded');
 }
 
 function onPageMessage(message) {
@@ -34,7 +35,7 @@ function onExtensionMessage(message) {
 function injectMeta() {
   let meta = document.createElement('meta');
   meta.id = extension_id;
-  meta.name = 'br.net.cartoriodigital.signer';
+  meta.name = 'br.net.cartoriodigital.assinador';
   document.head.appendChild(meta);
 }
 
