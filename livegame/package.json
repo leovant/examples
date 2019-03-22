@@ -1,0 +1,28 @@
+{
+  "name": "livegame",
+  "version": "1.0.0",
+  "description": "Architecture example to support a live game",
+  "main": "index.js",
+  "scripts": {
+    "test": "export NODE_ENV=test && mocha --opts tests/mocha.opts tests/**/*.test.js"
+  },
+  "author": "Leovan Tavares",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.5.3",
+    "axios": "^0.18.0",
+    "cron": "^1.7.0",
+    "deepstream.io": "^2.4.1",
+    "deepstream.io-client-js": "^2.3.0",
+    "dotenv": "^7.0.0",
+    "moment": "^2.24.0",
+    "redis": "^2.8.0",
+    "winston": "^3.2.1",
+    "winston-cloudwatch": "^2.0.5"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "nodemon": "^1.18.10"
+  }
+}

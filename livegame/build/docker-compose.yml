@@ -1,0 +1,72 @@
+version: '3'
+
+networks:
+  livegame:
+    driver: bridge
+
+services:
+  queue:
+    container_name: futebol-queue
+    image: rabbitmq:3.6.11-management-alpine
+    restart: unless-stopped
+    ports:
+      - 5672
+      - 15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=futebol
+      - RABBITMQ_DEFAULT_PASS=futebol
+    networks:
+      livegame:
+        aliases:
+          - queue.livegame
+
+  redis:
+    container_name: futebol-redis
+    image: redis
+    restart: unless-stopped
+    ports:
+      - 6379
+    volumes:
+      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      livegame:
+        aliases:
+          - redis.livegame
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  deepstream:
+    container_name: futebol-deepstream
+    image: node:10
+    restart: unless-stopped
+    ports:
+      - 6020
+    volumes:
+      - ./../:/application
+    working_dir: /application
+    networks:
+      livegame:
+        aliases:
+          - deepstream.livegame
+    command: node src/deepstream.js
+  # node:
+  #   image: node:10
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - queue
+  #     - redis
+  #     environment:
+  #       - NODE_ENV='development'
+  #       - FOOTSTATS_URL='http://apifutebol.footstats.net/3.0'
+  #       - FOOTSTATS_TOKEN=${FOOTSTATS_TOKEN},
+  #       - REDIS_HOST='redis.livegame',
+  #       - REDIS_PORT='6379',
+  #       - REDIS_PASS='futebol',
+  #       - RABBITMQ_HOST='queue.livegame',
+  #       - RABBITMQ_PORT='5672',
+  #       - RABBITMQ_USER='futebol',
+  #       - RABBITMQ_PASS='futebol',
+  #       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID},
+  #       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY},
+  #       - AWS_REGION=${AWS_REGION}
+  #   networks:
+  #     - livegame
