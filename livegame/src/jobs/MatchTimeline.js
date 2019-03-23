@@ -1,11 +1,14 @@
+const Cache = require('../services/Cache');
 const Footstats = require('../services/Footstats');
+const Stream = require('../services/Stream');
 
 class MatchTimeline {
-  static async runTo(matchId) {
-    let lastComment = await Cache.get(`matches:live:${matchId}:lastComment`);
-    lastComment = JSON.parse(lastComment);
-    const lastCommentId = lastComment.id || null;
+  static async runTo(match) {
+    let comments = await Footstats.getMatchTimeline(match.id);
 
-    let comments = await Footstats.getMatchTimeline(matchId, lastCommentId);
+    Cache.set(`matches:${match.id}:comments`);
+    Stream.postTo(`live:matches:${match.id}`, { ...match, comments });
+
+    return comments;
   }
 }

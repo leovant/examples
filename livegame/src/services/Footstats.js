@@ -33,11 +33,17 @@ class Footstats {
   static async getMatchTimeline(matchId, lastCommentId = null) {
     const endpoint = this.getEndpoint(`partidas/${matchId}/narracoes`);
 
-    const { data } = this.request(endpoint, {
+    const data = await this.request(endpoint, {
       ultimoIdNarracao: lastCommentId
     });
 
     return data;
+  }
+
+  static getMatch(matchId) {
+    const endpoint = this.getEndpoint(`${matchId}`);
+
+    return this.request(endpoint);
   }
 
   static getTeam(id) {
