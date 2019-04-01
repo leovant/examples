@@ -1,5 +1,6 @@
 const { FOOTSTATS_URL, FOOTSTATS_TOKEN } = require('../config/params');
 const httpClient = require('./HttpClient');
+const { to } = require('../helpers/promises');
 
 // http://apifutebol.footstats.net/
 
@@ -33,7 +34,7 @@ class Footstats {
   static async getMatchTimeline(matchId, lastCommentId = null) {
     const endpoint = this.getEndpoint(`partidas/${matchId}/narracoes`);
 
-    const data = await this.request(endpoint, {
+    const { data } = await this.request(endpoint, {
       ultimoIdNarracao: lastCommentId
     });
 
@@ -56,7 +57,11 @@ class Footstats {
     const headers = {
       Authorization: `Bearer ${this.getToken()}`
     };
-    const response = await this.getHttpClient().get(endpoint, headers, params);
+    const [err, response] = await to(
+      this.getHttpClient().get(endpoint, headers, params)
+    );
+
+    if (err) throw err;
 
     return response.data;
   }

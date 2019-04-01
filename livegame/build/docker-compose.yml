@@ -10,8 +10,8 @@ services:
     image: rabbitmq:3.6.11-management-alpine
     restart: unless-stopped
     ports:
-      - 5672
-      - 15672
+      - 32822:5672
+      - 32825:15672
     environment:
       - RABBITMQ_DEFAULT_USER=futebol
       - RABBITMQ_DEFAULT_PASS=futebol
@@ -25,7 +25,7 @@ services:
     image: redis
     restart: unless-stopped
     ports:
-      - 6379
+      - 32823:6379
     volumes:
       - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
@@ -34,20 +34,81 @@ services:
           - redis.livegame
     command: redis-server /usr/local/etc/redis/redis.conf
 
-  deepstream:
-    container_name: futebol-deepstream
-    image: node:10
+  # deepstream:
+  #   container_name: futebol-deepstream
+  #   image: node:10
+  #   restart: unless-stopped
+  #   ports:
+  #     - 32824:6020
+  #   volumes:
+  #     - ./../:/application
+  #   working_dir: /application
+  #   networks:
+  #     livegame:
+  #       aliases:
+  #         - deepstream.livegame
+  #   command: node src/deepstream.js
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto
     restart: unless-stopped
     ports:
-      - 6020
-    volumes:
-      - ./../:/application
-    working_dir: /application
+      - 1883:1883
+      - 9001:9001
     networks:
       livegame:
         aliases:
-          - deepstream.livegame
-    command: node src/deepstream.js
+          - mosquitto.livegame
+
+  graylog-mongo:
+    container_name: graylog-mongo
+    image: mongo:3
+    restart: unless-stopped
+    networks:
+      livegame:
+        aliases:
+          - db.graylog.livegame
+
+  graylog-elasticsearch:
+    container_name: graylog-elastic
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.6.1
+    restart: unless-stopped
+    environment:
+      - http.host=0.0.0.0
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    networks:
+      livegame:
+        aliases:
+          - elastic.graylog.livegame
+
+  graylog:
+    container_name: graylog
+    image: graylog/graylog:3.0
+    restart: unless-stopped
+    ports:
+      # Graylog web interface and REST API
+      - 9000:9000
+      # Syslog TCP
+      - 1514:1514
+      # Syslog UDP
+      - 1514:1514/udp
+      # GELF TCP
+      - 12201:12201
+      # GELF UDP
+      - 12201:12201/udp
+    environment:
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+    networks:
+      livegame:
+        aliases:
+          - graylog.livegame
+    depends_on:
+      - graylog-mongo
+      - graylog-elasticsearch
+    links:
+      - graylog-mongo:mongo
+      - graylog-elasticsearch:elasticsearch
   # node:
   #   image: node:10
   #   restart: unless-stopped

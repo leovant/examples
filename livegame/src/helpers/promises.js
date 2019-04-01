@@ -24,8 +24,14 @@ const sorted = (raw = []) => {
   return sortedArr;
 };
 
+const to = promise =>
+  promise
+    .then(data => [null, data])
+    .catch(err => (err instanceof Error ? [err] : [new Error(err)]));
+
 module.exports = {
   neverReject,
   neverRejectAll,
-  sorted
+  sorted,
+  to
 };

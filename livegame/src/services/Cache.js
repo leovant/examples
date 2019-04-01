@@ -19,7 +19,7 @@ class Cache {
   static set(key, value) {
     const setAsync = promisify(this.getClient().set).bind(this.getClient());
 
-    return setAsync(key, value);
+    return setAsync(key, JSON.stringify(value));
   }
 
   static get(key) {

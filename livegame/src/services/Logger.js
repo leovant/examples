@@ -4,58 +4,43 @@ const {
   ENV,
   AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY,
-  AWS_REGION
+  AWS_REGION,
+  TEAM_ID
 } = require('../config/params');
 const { utc } = require('../helpers/datetime');
 
 class Logger {
   static getLogger() {
-    winston.configure({
-      exitOnError: false,
-      levels: {
-        emerg: 0,
-        alert: 1,
-        crit: 2,
-        error: 3,
-        warning: 4,
-        notice: 5,
-        info: 6,
-        debug: 7
+    const console = new winston.transports.Console({
+      timestamp: () => {
+        return utc('YYYY-MM-DD HH:mm:ss');
       },
-      colors: {
-        emerg: 'bgRed',
-        alert: 'bgMagenta',
-        crit: 'bgRed',
-        error: 'red',
-        warning: 'yellow',
-        notice: 'bgBlue',
-        info: 'green',
-        debug: 'white'
-      },
-      transports: [
-        new WinstonCloudWatch({
-          logGroupName: 'Sportech',
-          logStreamName: `Schedulers-${ENV}`,
-          awsAccessKeyId: AWS_ACCESS_KEY_ID,
-          awsSecretKey: AWS_SECRET_ACCESS_KEY,
-          awsRegion: AWS_REGION
-        })
-      ]
+      json: false,
+      level: 'debug'
+    });
+    const cloudWatch = new WinstonCloudWatch({
+      logGroupName: 'Sportech',
+      logStreamName: `Schedulers-${ENV}` + (TEAM_ID ? `-${TEAM_ID}` : ''),
+      awsAccessKeyId: AWS_ACCESS_KEY_ID,
+      awsSecretKey: AWS_SECRET_ACCESS_KEY,
+      awsRegion: AWS_REGION,
+      level: 'error',
+      jsonMessage: true
     });
 
+    const logger = winston.createLogger({
+      exitOnError: false,
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.json()
+      )
+    });
+    //logger.add(cloudWatch);
+
     if (ENV !== 'production') {
-      winston.add(
-        new winston.transports.Console({
-          timestamp: () => {
-            return utc('YYYY-MM-DD HH:mm:ss');
-          },
-          json: false,
-          colorize: true,
-          level: 'debug'
-        })
-      );
+      logger.add(console);
     }
-    return winston;
+    return logger;
   }
 
   static emerg(...emerg) {
@@ -84,6 +69,10 @@ class Logger {
 
   static info(...info) {
     this.getLogger().log('info', ...info);
+  }
+
+  static debug(...info) {
+    this.getLogger().log('debug', ...info);
   }
 }
 

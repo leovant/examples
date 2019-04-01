@@ -1,5 +1,6 @@
-module.exports = {
+const config = {
   ENV: process.env.NODE_ENV || 'development',
+  TEAM_ID: '', // get team id from env or command line
   FOOTSTATS_URL: process.env.FOOTSTATS_URL,
   FOOTSTATS_TOKEN: process.env.FOOTSTATS_TOKEN,
   REDIS_HOST: process.env.REDIS_HOST,
@@ -12,6 +13,9 @@ module.exports = {
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
   AWS_REGION: process.env.AWS_REGION,
-  DEEPSTREAM_HOST: process.env.DEEPSTREAM_HOST,
-  DEEPSTREAM_PORT: process.env.DEEPSTREAM_PORT
+  // DEEPSTREAM_HOST: process.env.DEEPSTREAM_HOST,
+  // DEEPSTREAM_PORT: process.env.DEEPSTREAM_PORT,
+  MOSQUITTO_HOST: process.env.MOSQUITTO_HOST
 };
+
+module.exports = config;
