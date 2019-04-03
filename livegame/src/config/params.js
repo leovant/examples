@@ -13,8 +13,6 @@ const config = {
   AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
   AWS_REGION: process.env.AWS_REGION,
-  // DEEPSTREAM_HOST: process.env.DEEPSTREAM_HOST,
-  // DEEPSTREAM_PORT: process.env.DEEPSTREAM_PORT,
   MOSQUITTO_HOST: process.env.MOSQUITTO_HOST
 };
 

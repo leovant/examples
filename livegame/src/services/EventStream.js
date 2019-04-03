@@ -1,14 +1,9 @@
-// https://deepstreamhub.com/tutorials/guides/records/
-
-// const deepstream = require('deepstream.io-client-js');
-// const { DEEPSTREAM_HOST, DEEPSTREAM_PORT } = require('../config/params');
 const mqtt = require('mqtt');
 const { to } = require('../helpers/promises');
 const { MOSQUITTO_HOST } = require('../config/params');
 
 class EventStream {
   static getClient() {
-    // return deepstream(`${DEEPSTREAM_HOST}:${DEEPSTREAM_PORT}`).login();
     return new Promise((resolve, reject) => {
       const client = mqtt.connect(`mqtt://${MOSQUITTO_HOST}`);
       client.on('connect', () => resolve(client));
@@ -21,25 +16,15 @@ class EventStream {
 
     if (error) throw error;
 
-    return new Promise(( resolve, reject ) => {
+    return new Promise((resolve, reject) => {
       client.publish(channel, JSON.stringify(data), err => {
         if (err) {
           return reject(err);
         }
+        client.end();
         resolve(data);
       });
     });
-
-    
-
-    // return new Promise((resolve, reject) => {
-    //   const record = this.getClient().record.getRecord(channel);
-    //   record.set(data, error => reject(error));
-
-    //   record.whenReady(readyRecord => {
-    //     resolve(readyRecord.get());
-    //   });
-    // });
   }
 }
 
